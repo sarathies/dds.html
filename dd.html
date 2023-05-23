@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Mark Maintenance System</title>
+</head>
+<body>
+    <?php
+    // Database configuration
+    $servername = "localhost";
+    $username = "your_username";
+    $password = "your_password";
+    $dbname = "your_database_name";
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Inserting data into the database
+    if (isset($_POST['submit'])) {
+        $name = $_POST['name'];
+        $marks = $_POST['marks'];
+
+        $sql = "INSERT INTO students (name, marks) VALUES ('$name', $marks)";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Record inserted successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    // Fetching student marks from the database
+    $sql = "SELECT * FROM students";
+    $result = $conn->query($sql);
+    ?>
+
+    <h2>Enter Student Marks</h2>
+    <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required><br><br>
+
+        <label for="marks">Marks:</label>
+        <input type="number" name="marks" id="marks" required><br><br>
+
+        <input type="submit" name="submit" value="Submit">
+    </form>
+
+    <h2>Student Marks</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Marks</th>
+        </tr>
+        <?php
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row['id'] . "</td>";
+                echo "<td>" . $row['name'] . "</td>";
+                echo "<td>" . $row['marks'] . "</td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No records found</td></tr>";
+        }
+
+        $conn->close();
+        ?>
+    </table>
+</body>
+</html>
